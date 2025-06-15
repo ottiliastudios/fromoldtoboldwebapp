@@ -124,19 +124,20 @@ if uploaded_file:
         (df["material"].str.lower() == material.lower())
     ]
 
-st.subheader("Matching designs:")
+    st.subheader("Matching designs:")
 
-if not matched.empty:
-    img_paths = matched["filename"].tolist()
-    captions = matched.apply(
-        lambda row: f"<a href='{row['url']}' target='_blank'>{row['name']} – {row['weight']} g</a>",
-        axis=1
-    ).tolist()
+    if not matched.empty:
+        img_paths = matched["filename"].tolist()
+        captions = matched.apply(
+            lambda row: f"<a href='{row['url']}' target='_blank'>{row['name']} – {row['weight']} g</a>",
+            axis=1
+        ).tolist()
 
-    idx = st.slider("Browse matching designs", 0, len(img_paths) - 1, 0)
-    st.image(img_paths[idx], width=300)
-    st.markdown(f"<div style='text-align: center;'>{captions[idx]}</div>", unsafe_allow_html=True)
-else:
-    st.write("No matching designs found.")
+        idx = st.slider("Browse matching designs", 0, len(img_paths) - 1, 0)
+        st.image(img_paths[idx], width=300)
+        st.markdown(f"<div style='text-align: center;'>{captions[idx]}</div>", unsafe_allow_html=True)
+    else:
+        st.write("No matching designs found.")
+
 
 
