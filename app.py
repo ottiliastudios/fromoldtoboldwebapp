@@ -42,7 +42,7 @@ def load_model():
 model = load_model()
 
 # ---------- APP DESIGN ----------
-st.set_page_config(page_title="From Old to Bold")
+
 
 st.markdown("""
     <style>
