@@ -61,9 +61,9 @@ st.markdown("""
             display: flex;
             justify-content: center;
             margin-bottom: 2rem;
+            font-family: 'Syne', sans-serif !important;
         }
         .external-button-small a {
-            font-family: 'Syne', sans-serif !important;
             background-color: black;
             color: white;
             padding: 6px 12px;
