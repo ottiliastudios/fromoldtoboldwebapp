@@ -55,6 +55,7 @@ st.markdown("""
             text-align: center;
             font-size: 1.1rem;
             margin-bottom: 2rem;
+            font-family: 'Syne', sans-serif !important;
         }
         .external-button-small {
             display: flex;
@@ -62,6 +63,7 @@ st.markdown("""
             margin-bottom: 2rem;
         }
         .external-button-small a {
+            font-family: 'Syne', sans-serif !important;
             background-color: black;
             color: white;
             padding: 6px 12px;
