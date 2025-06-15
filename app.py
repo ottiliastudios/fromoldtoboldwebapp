@@ -124,7 +124,7 @@ if uploaded_file:
         (df["material"].str.lower() == material.lower())
     ]
 
-        st.subheader("Matching designs:")
+st.subheader("Matching designs:")
 if not matched.empty:
     img_paths = matched["filename"].tolist()
     captions = matched.apply(
