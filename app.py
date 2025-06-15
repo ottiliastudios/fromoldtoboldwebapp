@@ -136,19 +136,18 @@ if uploaded_file:
         (df["material"].str.lower() == material.lower())
     ]
 
-  st.subheader("Matching designs:")
-
-  if not matched.empty:
-    cols = st.columns(min(len(matched), 3))  # Zeigt bis zu 3 Designs nebeneinander an
-    for i, (_, row) in enumerate(matched.iterrows()):
-        with cols[i % 3]:  # Zirkulär durch Spalten
-            st.image(row["filename"], use_container_width=True)
-            st.markdown(
-                f"<div style='text-align: center;'>"
-                f"<a href='{row['url']}' target='_blank'>{row['name']} – {row['weight']} g</a>"
-                f"</div>",
-                unsafe_allow_html=True
-            )
+st.subheader("Matching designs:")
+if not matched.empty:
+        cols = st.columns(len(matched))
+        for i, (_, row) in enumerate(matched.iterrows()):
+            with cols[i]:
+                st.image(row["filename"], use_column_width=True)
+                st.markdown(
+                    f"<div style='text-align: center; font-size: 0.9rem;'><a href='{row['url']}' target='_blank'>{row['name']} – {row['weight']} g</a></div>",
+                    unsafe_allow_html=True
+                )
 else:
     st.write("No matching designs found.")
+
+
 
