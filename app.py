@@ -125,6 +125,7 @@ if uploaded_file:
     ]
 
 st.subheader("Matching designs:")
+
 if not matched.empty:
     img_paths = matched["filename"].tolist()
     captions = matched.apply(
@@ -137,4 +138,5 @@ if not matched.empty:
     st.markdown(f"<div style='text-align: center;'>{captions[idx]}</div>", unsafe_allow_html=True)
 else:
     st.write("No matching designs found.")
+
 
