@@ -74,13 +74,10 @@ st.markdown("""
 
 # --- Logo ---
 
-
-st.markdown("""
-<div style='text-align: center;'>
-    <img src='logo.png' width='180'>
+# Zentriertes Logo mit Spalten
+cols = st.columns([1, 2, 1])  # Spaltenverhältnis: Links 1, Mitte 2, Rechts 1
+with cols[1]:  # Mittlere Spalte
     st.image("logo.png", width=180)
-</div>
-""", unsafe_allow_html=True)
 
 
 # --- Description ---
