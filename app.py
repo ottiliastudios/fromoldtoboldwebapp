@@ -1,11 +1,11 @@
 import streamlit as st
+st.set_page_config(page_title="From Old to Bold")
+
 import pandas as pd
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
 from PIL import Image
-
-st.set_page_config(page_title="From Old to Bold")
 
 
 # ---------- MODEL ----------
