@@ -1,5 +1,6 @@
 import streamlit as st
 st.set_page_config(page_title="From Old to Bold")
+
 import pandas as pd
 import torch
 import torch.nn as nn
@@ -7,71 +8,8 @@ import torchvision.transforms as transforms
 from PIL import Image
 
 
-# 🔹 CSS Styling inkl. Logo-Zentrierung
-st.markdown("""
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Syne&display=swap');
 
-        html, body, [class*="css"] {
-            font-family: 'Syne', sans-serif !important;
-            background-color: #ffffff;
-            color: #000000;
-        }
-
-        .center-logo {
-            display: flex;
-            justify-content: center;
-            margin-top: 2rem;
-        }
-
-        .description-text {
-            text-align: center;
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-        }
-
-        .external-button-small {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 2rem;
-        }
-
-        .external-button-small a {
-            background-color: black;
-            color: white;
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            border-radius: 6px;
-            text-decoration: none;
-        }
-
-        .caption-style {
-            text-align: center;
-            font-size: 1rem;
-            margin-top: 0.5rem;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-# 🔹 Logo zentriert anzeigen
-with st.container():
-    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
-    st.image("logo.png", width=180)
-    st.markdown("</div>", unsafe_allow_html=True)
-
-
-
-# 🔹 Einleitungstext
-st.markdown('<div class="description-text">Upload a photo of your old piece of jewelry. Our AI estimates the weight and suggests matching new designs!</div>', unsafe_allow_html=True)
-
-# 🔹 Externer Button
-st.markdown("""
-<div class="external-button-small">
-    <a href="https://eager-transform-667249.framer.app/" target="_blank">WHAT IS FROM OLD TO BOLD</a>
-</div>
-""", unsafe_allow_html=True)
-
-# ---------- MODEL ----------
+# --- Model ---
 class SimpleCNN(nn.Module):
     def __init__(self):
         super(SimpleCNN, self).__init__()
@@ -104,7 +42,53 @@ def load_model():
 
 model = load_model()
 
-# ---------- USER INPUT ----------
+# --- Style ---
+st.markdown("""
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syne&display=swap');
+        html, body, [class*="css"] {
+            font-family: 'Syne', sans-serif !important;
+            background-color: #ffffff;
+            color: #000000;
+        }
+        .description-text {
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        .external-button-small {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .external-button-small a {
+            background-color: black;
+            color: white;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# --- Logo ---
+st.markdown("""
+<div style='text-align: center;'>
+    <img src='logo.png' width='180'>
+</div>
+""", unsafe_allow_html=True)
+
+# --- Description ---
+st.markdown('<div class="description-text">Upload a photo of your old piece of jewelry. Our AI estimates the weight and suggests matching new designs!</div>', unsafe_allow_html=True)
+
+st.markdown("""
+<div class="external-button-small">
+    <a href="https://eager-transform-667249.framer.app/" target="_blank">WHAT IS FROM OLD TO BOLD</a>
+</div>
+""", unsafe_allow_html=True)
+
+# --- Input ---
 material = st.selectbox("Select material", ["Silver", "Gold", "Other"])
 if material == "Other":
     custom_material = st.text_input("Please specify the material")
@@ -112,6 +96,7 @@ if material == "Other":
 
 uploaded_file = st.file_uploader("Upload an image of your old jewelry", type=["jpg", "jpeg", "png"])
 
+# --- Predict ---
 def predict_weight(image):
     transform = transforms.Compose([
         transforms.Resize((224, 224)),
@@ -122,7 +107,6 @@ def predict_weight(image):
         prediction = model(image).item()
     return round(prediction, 2)
 
-# ---------- PROCESS & DISPLAY ----------
 if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
     st.image(image, caption="Uploaded image", use_container_width=True)
@@ -136,8 +120,8 @@ if uploaded_file:
         (df["material"].str.lower() == material.lower())
     ]
 
-st.subheader("Matching designs:")
-if not matched.empty:
+    st.subheader("Matching designs:")
+    if not matched.empty:
         cols = st.columns(len(matched))
         for i, (_, row) in enumerate(matched.iterrows()):
             with cols[i]:
@@ -146,8 +130,5 @@ if not matched.empty:
                     f"<div style='text-align: center; font-size: 0.9rem;'><a href='{row['url']}' target='_blank'>{row['name']} – {row['weight']} g</a></div>",
                     unsafe_allow_html=True
                 )
-else:
-    st.write("No matching designs found.")
-
-
-
+    else:
+        st.write("No matching designs found.")
