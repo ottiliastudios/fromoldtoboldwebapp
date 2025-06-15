@@ -40,7 +40,7 @@ class SimpleCNN(torch.nn.Module):
 @st.cache_resource
 def load_model():
     model = SimpleCNN()
-    model.load_state_dict(torch.load("model/model.pth", map_location=torch.device("cpu")))
+    model.load_state_dict(torch.load("model/model.pth", map_location=torch.device("cpu"), weights_only=False))
     model.eval()
     return model
 
