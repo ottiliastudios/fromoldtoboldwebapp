@@ -125,7 +125,7 @@ if uploaded_file:
         cols = st.columns(len(matched))
         for i, (_, row) in enumerate(matched.iterrows()):
             with cols[i]:
-                st.image(row["filename"], use_column_width=True)
+                st.image(row["filename"], use_container_width=True)
                 st.markdown(
                     f"<div style='text-align: center; font-size: 0.9rem;'><a href='{row['url']}' target='_blank'>{row['name']} – {row['weight']} g</a></div>",
                     unsafe_allow_html=True
