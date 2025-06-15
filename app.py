@@ -54,11 +54,11 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 🔹 Logo zentriert anzeigen
-st.markdown("""
-<div style='text-align: center;'>
-    <img src='logo.png' width='180'>
-</div>
-""", unsafe_allow_html=True)
+with st.container():
+    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
+    st.image("logo.png", width=180)
+    st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 # 🔹 Einleitungstext
@@ -136,16 +136,19 @@ if uploaded_file:
         (df["material"].str.lower() == material.lower())
     ]
 
-    st.subheader("Matching designs:")
-    if not matched.empty:
-        img_paths = matched["filename"].tolist()
-        captions = matched.apply(
-            lambda row: f"<a href='{row['url']}' target='_blank'>{row['name']} – {row['weight']} g</a>",
-            axis=1
-        ).tolist()
+  st.subheader("Matching designs:")
 
-        idx = st.slider("Browse matching designs", 0, len(img_paths) - 1, 0)
-        st.image(img_paths[idx], width=300)
-        st.markdown(f"<div class='caption-style'>{captions[idx]}</div>", unsafe_allow_html=True)
-    else:
-        st.write("No matching designs found.")
+  if not matched.empty:
+    cols = st.columns(min(len(matched), 3))  # Zeigt bis zu 3 Designs nebeneinander an
+    for i, (_, row) in enumerate(matched.iterrows()):
+        with cols[i % 3]:  # Zirkulär durch Spalten
+            st.image(row["filename"], use_container_width=True)
+            st.markdown(
+                f"<div style='text-align: center;'>"
+                f"<a href='{row['url']}' target='_blank'>{row['name']} – {row['weight']} g</a>"
+                f"</div>",
+                unsafe_allow_html=True
+            )
+else:
+    st.write("No matching designs found.")
+
