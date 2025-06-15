@@ -5,6 +5,9 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 from PIL import Image
 
+st.set_page_config(page_title="From Old to Bold")
+
+
 # ---------- MODEL ----------
 class SimpleCNN(nn.Module):
     def __init__(self):
