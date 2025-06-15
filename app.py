@@ -73,11 +73,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- Logo ---
+
+st.image("logo.png", width=180)
 st.markdown("""
 <div style='text-align: center;'>
     <img src='logo.png' width='180'>
 </div>
 """, unsafe_allow_html=True)
+
 
 # --- Description ---
 st.markdown('<div class="description-text">Upload a photo of your old piece of jewelry. Our AI estimates the weight and suggests matching new designs!</div>', unsafe_allow_html=True)
