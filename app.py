@@ -77,9 +77,10 @@ st.markdown("""
 # --- Logo ---
 
 # Zentriertes Logo mit Spalten
-cols = st.columns([1, 2, 1])  # Spaltenverhältnis: Links 1, Mitte 2, Rechts 1
+cols = st.columns([1, 1, 1])  # Drei gleich große Spalten
 with cols[1]:  # Mittlere Spalte
     st.image("logo.png", width=180)
+
 
 
 # --- Description ---
