@@ -10,20 +10,23 @@ from io import BytesIO
 # -----------------------------
 # Model Definition
 # -----------------------------
+import torch
+
+# Deine eigene Modellklasse
 class SimpleCNN(torch.nn.Module):
     def __init__(self):
         super(SimpleCNN, self).__init__()
         self.features = torch.nn.Sequential(
-            torch.nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1),
+            torch.nn.Conv2d(3, 16, kernel_size=3, padding=1),
             torch.nn.ReLU(),
-            torch.nn.MaxPool2d(2, 2),
-            torch.nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
+            torch.nn.MaxPool2d(2),
+            torch.nn.Conv2d(16, 32, kernel_size=3, padding=1),
             torch.nn.ReLU(),
-            torch.nn.MaxPool2d(2, 2),
+            torch.nn.MaxPool2d(2),
         )
         self.regressor = torch.nn.Sequential(
             torch.nn.Flatten(),
-            torch.nn.Linear(32 * 56 * 56, 128),
+            torch.nn.Linear(32 * 56 * 56, 128),  # Achtung: 224x224 Inputgröße
             torch.nn.ReLU(),
             torch.nn.Linear(128, 1)
         )
@@ -31,21 +34,18 @@ class SimpleCNN(torch.nn.Module):
     def forward(self, x):
         x = self.features(x)
         x = self.regressor(x)
-        return x.squeeze()
+        return x
 
-# -----------------------------
-# Model Load
-# -----------------------------
+# 🔄 Lokales Modell laden
 @st.cache_resource
 def load_model():
-    url = "https://drive.google.com/uc?export=download&id=14W00enD_nMn7uu1_tTpVGGSjSV0KVkk3"
-    response = requests.get(url)
     model = SimpleCNN()
-    model.load_state_dict(torch.load(BytesIO(response.content), map_location=torch.device("cpu")))
+    model.load_state_dict(torch.load("model/model.pth", map_location=torch.device("cpu")))
     model.eval()
     return model
 
 model = load_model()
+
 
 # -----------------------------
 # Layout + Styling
@@ -103,10 +103,11 @@ def predict_weight(image):
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
     ])
-    image_tensor = transform(image).unsqueeze(0)
+    image = transform(image).unsqueeze(0)
     with torch.no_grad():
-        prediction = model(image_tensor)
+        prediction = model(image)
     return prediction.item()
+
 
 if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
