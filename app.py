@@ -132,8 +132,6 @@ if uploaded_file:
     ]
     
     
-        )
-        
 if not matched.empty:
     st.markdown("<h4 style='margin-left: 16px;'>Matching Designs:</h4>", unsafe_allow_html=True)
     cols = st.columns(3)  # 3 Designs pro Zeile
@@ -144,13 +142,20 @@ if not matched.empty:
             st.markdown(
                 f"""
                 <div style='text-align: center; margin-top: -8px;'>
-                    <a href='{row['url']}' target='_blank' style='text-decoration: none; font-weight: bold;'>{row['name']}</a><br>
-                    <span style='text-decoration: line-through; color: gray;'>Original Price: {row['price']} €</span><br>
-                    <span style='color: green;'>Now: {round(row['price'] * 0.9, 2)} € (10% off)</span>
+                    <a href="{row['url']}" target="_blank" style="text-decoration: none; font-weight: bold;">
+                        {row['name']}
+                    </a><br>
+                    <span style="text-decoration: line-through; color: gray;">
+                        Original Price: {row['price']} €
+                    </span><br>
+                    <span style="color: green;">
+                        Now: {round(row['price'] * 0.9, 2)} € (10% off)
+                    </span>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 else:
     st.write("No matching designs found.")
+
 
