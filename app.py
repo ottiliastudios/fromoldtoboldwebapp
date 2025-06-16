@@ -132,12 +132,13 @@ if uploaded_file:
         st.markdown(f"<p style='text-align: center; font-weight: bold;'>Estimated weight: {weight:.2f} grams</p>", unsafe_allow_html=True)
 
     # Vorschläge anzeigen
-    df = pd.read_csv("designs.csv", sep=";")
-    tolerance = 1.0
-    matched = df[
-        (abs(df["weight"] - weight) <= tolerance) &
-        (df["material"].str.lower() == material.lower())
-    ]
+df = pd.read_csv("designs.csv", sep=";")
+tolerance = 1.0
+matched = df[
+    (abs(df["weight"] - weight) <= tolerance) &
+    (df["material"].str.lower() == material.lower())
+]
+
 
 # Rabatt abhängig vom Material
 if material.lower() == "silver":
