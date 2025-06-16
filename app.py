@@ -6,6 +6,8 @@ import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
 from PIL import Image
+import cv2
+import numpy as np
 
 
 
@@ -114,6 +116,10 @@ def predict_weight(image):
 if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
     st.image(image, caption="Uploaded image", use_container_width=True)
+    
+if not detect_ruler(image):
+        st.error("No ruler detected in the image. Please include a ruler next to your jewelry for accurate weight estimation.")
+    else:
     weight = predict_weight(image)
     st.write(f"**Estimated weight:** {weight:.2f} grams")
 
