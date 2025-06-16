@@ -135,21 +135,25 @@ if uploaded_file:
     # Designs anzeigen
     if not matched.empty:
         st.markdown("<h4 style='margin-left: 16px;'>Matching Designs:</h4>", unsafe_allow_html=True)
-        cols = st.columns(3)
-        for idx, row in matched.iterrows():
+
+        html_gallery = "<div style='display: flex; flex-wrap: wrap; gap: 24px; justify-content: center;'>"
+
+        for _, row in matched.iterrows():
             discounted_price = round(row["price"] * (1 - discount_rate), 2)
-            with cols[idx % 3]:
-                st.image(row["filename"], use_container_width=True)
-                st.markdown(
-                    f"""
-                    <div style='text-align: center; margin-top: -8px; font-family: "Syne", sans-serif !important;'>
-                        <a href='{row['url']}' target='_blank' style='text-decoration: none; font-weight: bold;'>{row['name']}</a><br>
+            html_gallery += f"""
+                <div style='width: 220px; text-align: center; font-family: "Syne", sans-serif;'>
+                    <img src="{row['filename']}" style="width: 100%; border-radius: 8px;" />
+                    <div style="margin-top: 6px;">
+                        <a href="{row['url']}" target="_blank" style="text-decoration: none; font-weight: bold; color: black;">{row['name']}</a><br>
                         <span style='font-size: 0.9rem;'>Weight: {row['weight']} g</span><br>
                         <span class='original-price'>Original Price: {row['price']} €</span><br>
                         <span class='discounted-price'>Now: {discounted_price} € ({int(discount_rate * 100)}% off)</span>
                     </div>
-                    """,
-                    unsafe_allow_html=True
-                )
+                </div>
+            """
+
+        html_gallery += "</div>"
+        st.markdown(html_gallery, unsafe_allow_html=True)
     else:
         st.write("No matching designs found.")
+
