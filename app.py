@@ -116,13 +116,13 @@ def predict_weight(image):
 # ---------- PREDICTION + RECOMMENDATION ----------
 if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
-    
-    cols = st.columns([1, 1, 1])
-    with cols[1]:
-        st.image(image, caption="Uploaded image", width=200)
-
     weight = predict_weight(image)
-    st.write(f"**Estimated weight:** {weight:.2f} grams")
+    
+    cols = st.columns([1, 1, 1])  # Zentrierung über Spalten
+    with cols[1]:
+    st.image(image, caption="Uploaded image", width=200)
+    st.markdown(f"<div style='text-align: center; font-weight: bold;'>Estimated weight: {weight:.2f} grams</div>", unsafe_allow_html=True)
+
 
     df = pd.read_csv("designs.csv", sep=";")
     tolerance = 1.0
