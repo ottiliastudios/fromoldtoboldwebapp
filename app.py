@@ -6,9 +6,6 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 from PIL import Image
 
-# ---------- SEITE KONFIGURATION ----------
-
-
 # ---------- STIL ----------
 st.markdown("""
     <style>
@@ -33,6 +30,33 @@ st.markdown("""
             font-size: 1rem;
             font-family: 'Syne', sans-serif !important;
         }
+
+        .design-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .design-card {
+            width: 220px;
+            text-align: center;
+            font-family: 'Syne', sans-serif;
+            font-family: 'Syne', sans-serif !important;
+        }
+
+        .design-card img {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .design-card a {
+            text-decoration: none;
+            font-weight: bold;
+            color: black;
+            font-family: 'Syne', sans-serif !important;
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -44,7 +68,7 @@ with cols[1]:
 # ---------- BESCHREIBUNG ----------
 st.markdown(
     """
-    <div style='text-align: center; font-size: 1.1rem; margin-bottom: 2rem; font-family: "Syne", sans-serif !important;'>
+    <div style='text-align: center; font-size: 1.1rem; margin-bottom: 2rem; font-family: 'Syne', sans-serif !important;'>
         Upload a photo of your old piece of jewelry next to a ruler. Our AI estimates the weight and suggests matching new designs!
     </div>
     """,
@@ -99,14 +123,13 @@ def load_model():
 
 model = load_model()
 
-# ---------- PREDICT & DESIGN ANZEIGEN ----------
+# ---------- PREDICT ----------
 if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
     st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
     st.image(image, caption="Uploaded image", width=200)
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # Gewicht vorhersagen
     transform = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
@@ -114,7 +137,8 @@ if uploaded_file:
     img_tensor = transform(image).unsqueeze(0)
     with torch.no_grad():
         weight = model(img_tensor).item()
-    st.markdown(f"<p style='text-align: center; font-weight: bold; font-family: 'Syne', sans-serif !important;'>Estimated weight: {weight:.2f} g</p>", unsafe_allow_html=True)
+
+    st.markdown(f"<p style='text-align: center; font-weight: bold;'>Estimated weight: {weight:.2f} g</p>", unsafe_allow_html=True)
 
     # Rabattlogik
     if material.lower() == "silver":
@@ -135,25 +159,25 @@ if uploaded_file:
     # Designs anzeigen
     if not matched.empty:
         st.markdown("<h4 style='margin-left: 16px;'>Matching Designs:</h4>", unsafe_allow_html=True)
-
-        html_gallery = "<div style='display: flex; flex-wrap: wrap; gap: 24px; justify-content: center;'>"
+        html_blocks = []
 
         for _, row in matched.iterrows():
             discounted_price = round(row["price"] * (1 - discount_rate), 2)
-            html_gallery += f"""
-                <div style='width: 220px; text-align: center; font-family: "Syne", sans-serif;'>
-                    <img src="{row['filename']}" style="width: 100%; border-radius: 8px;" />
-                    <div style="margin-top: 6px;">
-                        <a href="{row['url']}" target="_blank" style="text-decoration: none; font-weight: bold; color: black;">{row['name']}</a><br>
-                        <span style='font-size: 0.9rem;'>Weight: {row['weight']} g</span><br>
-                        <span class='original-price'>Original Price: {row['price']} €</span><br>
-                        <span class='discounted-price'>Now: {discounted_price} € ({int(discount_rate * 100)}% off)</span>
-                    </div>
+            html_block = f"""
+            <div class="design-card">
+                <img src="{row['filename']}" />
+                <div style="margin-top: 6px;">
+                    <a href="{row['url']}" target="_blank">{row['name']}</a><br>
+                    <span style='font-size: 0.9rem;'>Weight: {row['weight']} g</span><br>
+                    <span class='original-price'>Original Price: {row['price']} €</span><br>
+                    <span class='discounted-price'>Now: {discounted_price} € ({int(discount_rate * 100)}% off)</span>
                 </div>
+            </div>
             """
+            html_blocks.append(html_block)
 
-        html_gallery += "</div>"
-        st.markdown(html_gallery, unsafe_allow_html=True)
+        full_html = f"<div class='design-grid'>{''.join(html_blocks)}</div>"
+        st.markdown(full_html, unsafe_allow_html=True)
+
     else:
         st.write("No matching designs found.")
-
