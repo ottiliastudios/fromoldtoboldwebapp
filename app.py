@@ -1,4 +1,5 @@
 import streamlit as st
+# -------------------- Seiteneinstellungen --------------------
 st.set_page_config(page_title="From Old to Bold")
 import pandas as pd
 import torch
@@ -6,7 +7,9 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 from PIL import Image
 
-# ---------- STIL ----------
+
+
+# -------------------- Style --------------------
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Syne&display=swap');
@@ -30,67 +33,38 @@ st.markdown("""
             font-size: 1rem;
             font-family: 'Syne', sans-serif !important;
         }
-
-        .design-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .design-card {
-            width: 220px;
-            text-align: center;
-            font-family: 'Syne', sans-serif;
-            font-family: 'Syne', sans-serif !important;
-        }
-
-        .design-card img {
-            width: 100%;
-            border-radius: 8px;
-        }
-
-        .design-card a {
-            text-decoration: none;
-            font-weight: bold;
-            color: black;
-            font-family: 'Syne', sans-serif !important;
-        }
     </style>
 """, unsafe_allow_html=True)
 
-# ---------- LOGO ----------
+# -------------------- Logo --------------------
 cols = st.columns([1, 1, 1])
 with cols[1]:
     st.image("logo.png", width=180)
 
-# ---------- BESCHREIBUNG ----------
-st.markdown(
-    """
-    <div style='text-align: center; font-size: 1.1rem; margin-bottom: 2rem; font-family: 'Syne', sans-serif !important;'>
+# -------------------- Beschreibung --------------------
+st.markdown("""
+    <div style='text-align: center; font-size: 1.1rem; margin-bottom: 2rem;'>
         Upload a photo of your old piece of jewelry next to a ruler. Our AI estimates the weight and suggests matching new designs!
     </div>
-    """,
-    unsafe_allow_html=True
-)
-
-st.markdown("""
-<div style="display: flex; justify-content: center; margin-bottom: 2rem;">
-    <a href="https://eager-transform-667249.framer.app/" target="_blank" style="background-color: black; color: white; padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; text-decoration: none;">WHAT IS FROM OLD TO BOLD</a>
-</div>
 """, unsafe_allow_html=True)
 
-# ---------- MATERIAL AUSWAHL ----------
+# -------------------- Button --------------------
+st.markdown("""
+    <div style="display: flex; justify-content: center; margin-bottom: 2rem;">
+        <a href="https://eager-transform-667249.framer.app/" target="_blank" style="background-color: black; color: white; padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; text-decoration: none;">WHAT IS FROM OLD TO BOLD</a>
+    </div>
+""", unsafe_allow_html=True)
+
+# -------------------- Materialauswahl --------------------
 material = st.selectbox("Select material", ["Silver", "Gold", "Other"])
 if material == "Other":
     custom_material = st.text_input("Please specify the material")
     material = custom_material
 
-# ---------- DATEIUPLOAD ----------
+# -------------------- Dateiupload --------------------
 uploaded_file = st.file_uploader("Upload an image of your old jewelry", type=["jpg", "jpeg", "png"])
 
-# ---------- MODELL ----------
+# -------------------- Modellarchitektur --------------------
 class SimpleCNN(nn.Module):
     def __init__(self):
         super(SimpleCNN, self).__init__()
@@ -123,7 +97,7 @@ def load_model():
 
 model = load_model()
 
-# ---------- PREDICT ----------
+# -------------------- Verarbeitung --------------------
 if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
     st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
@@ -137,47 +111,38 @@ if uploaded_file:
     img_tensor = transform(image).unsqueeze(0)
     with torch.no_grad():
         weight = model(img_tensor).item()
-
     st.markdown(f"<p style='text-align: center; font-weight: bold;'>Estimated weight: {weight:.2f} g</p>", unsafe_allow_html=True)
 
     # Rabattlogik
-    if material.lower() == "silver":
-        discount_rate = 0.10
-    elif material.lower() == "gold":
-        discount_rate = 0.20
-    else:
-        discount_rate = 0.0
+    discount_rate = 0.10 if material.lower() == "silver" else 0.20 if material.lower() == "gold" else 0.0
 
-    # Designs filtern
+    # Designs
     df = pd.read_csv("designs.csv", sep=";")
     tolerance = 1.0
-    matched = df[
-        (abs(df["weight"] - weight) <= tolerance) &
-        (df["material"].str.lower() == material.lower())
-    ]
+    matched = df[(abs(df["weight"] - weight) <= tolerance) & (df["material"].str.lower() == material.lower())]
 
-    # Designs anzeigen
     if not matched.empty:
         st.markdown("<h4 style='margin-left: 16px;'>Matching Designs:</h4>", unsafe_allow_html=True)
-        html_blocks = []
 
+        html_blocks = ""
         for _, row in matched.iterrows():
             discounted_price = round(row["price"] * (1 - discount_rate), 2)
-            html_block = f"""
-            <div class="design-card">
-                <img src="{row['filename']}" />
+            html_blocks += f"""
+            <div style='width: 220px; text-align: center; font-family: "Syne", sans-serif;'>
+                <img src="{row['filename']}" style="width: 100%; border-radius: 8px;" />
                 <div style="margin-top: 6px;">
-                    <a href="{row['url']}" target="_blank">{row['name']}</a><br>
+                    <a href="{row['url']}" target="_blank" style="text-decoration: none; font-weight: bold; color: black;">{row['name']}</a><br>
                     <span style='font-size: 0.9rem;'>Weight: {row['weight']} g</span><br>
                     <span class='original-price'>Original Price: {row['price']} €</span><br>
                     <span class='discounted-price'>Now: {discounted_price} € ({int(discount_rate * 100)}% off)</span>
                 </div>
             </div>
             """
-            html_blocks.append(html_block)
 
-        full_html = f"<div class='design-grid'>{''.join(html_blocks)}</div>"
-        st.markdown(full_html, unsafe_allow_html=True)
-
+        st.markdown(f"""
+        <div style='display: flex; flex-wrap: wrap; gap: 24px; justify-content: center;'>
+            {html_blocks}
+        </div>
+        """, unsafe_allow_html=True)
     else:
         st.write("No matching designs found.")
