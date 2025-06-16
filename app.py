@@ -112,52 +112,54 @@ def predict_weight(image):
     with torch.no_grad():
         prediction = model(image).item()
     return round(prediction, 2)
+    
+def detect_ruler(image):
+    img = np.array(image.convert("RGB"))
+    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    edges = cv2.Canny(gray, 50, 150)
+
+    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    for cnt in contours:
+        x, y, w, h = cv2.boundingRect(cnt)
+        aspect_ratio = float(w) / h if h != 0 else 0
+        area = cv2.contourArea(cnt)
+
+        if 5 < aspect_ratio < 20 and area > 5000:
+            return True
+    return False
 
 if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
     st.image(image, caption="Uploaded image", use_container_width=True)
-    
-if not detect_ruler(image):
-        st.error("No ruler detected in the image. Please include a ruler next to your jewelry for accurate weight estimation.")
+
+    if not detect_ruler(image):
+        st.error("🚫 No ruler detected in the image. Please include a ruler next to your jewelry for accurate weight estimation.")
     else:
-    weight = predict_weight(image)
-    st.write(f"**Estimated weight:** {weight:.2f} grams")
+        weight = predict_weight(image)
+        st.write(f"**Estimated weight:** {weight:.2f} grams")
 
-    df = pd.read_csv("designs.csv", sep=";")
-    tolerance = 1.0
-    matched = df[
-        (abs(df["weight"] - weight) <= tolerance) &
-        (df["material"].str.lower() == material.lower())
-    ]
+        df = pd.read_csv("designs.csv", sep=";")
+        tolerance = 1.0
+        matched = df[
+            (abs(df["weight"] - weight) <= tolerance) &
+            (df["material"].str.lower() == material.lower())
+        ]
 
-    st.subheader("Matching designs:")
+        st.subheader("Matching designs:")
+        if not matched.empty:
+            cols = st.columns(3)
+            for idx, (_, row) in enumerate(matched.iterrows()):
+                with cols[idx % 3]:
+                    st.image(row["filename"], use_container_width=True)
+                    st.markdown(
+                        f"<div style='text-align: center; font-size: 0.9rem; font-family: 'Syne', sans-serif !important;'>"
+                        f"<a href='{row['url']}' target='_blank'>{row['name']} – {row['weight']} g</a><br>"
+                        f"<span style='color: green;'>Original: {row['price']} €<br>Now: {round(row['price'] * 0.9, 2)} € 🎉</span>"
+                        f"</div>", unsafe_allow_html=True)
+        else:
+            st.write("No matching designs found.")
 
-    if not matched.empty:
-        for _, row in matched.iterrows():
-            # Originalpreis
-            original_price = row["price"]
-            discount = 0.10
-            discounted_price = original_price * (1 - discount)
-
-            # Bild anzeigen
-            st.image(row["filename"], width=250)
-
-            # Name mit Link anzeigen
-            st.markdown(
-                f"**[{row['name']}]({row['url']})**",
-                unsafe_allow_html=True
-            )
-
-            # Preise anzeigen
-            st.markdown(f"""
-                <div style="font-size: 0.95rem;">
-                    Original price: <s>{original_price:.2f} €</s><br>
-                    <span style="color: green;">With From Old to Bold: {discounted_price:.2f} € (-10%)</span>
-                </div>
-            """, unsafe_allow_html=True)
-            st.markdown("---")
-    else:
-        st.write("No matching designs found.")
 
 
         
