@@ -1,14 +1,15 @@
 import streamlit as st
+st.set_page_config(page_title="From Old to Bold")
 import pandas as pd
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
 from PIL import Image
 
-# Seiteneinstellungen
-st.set_page_config(page_title="From Old to Bold")
 
-# ---------- Modell ----------
+
+# ---------- MODELL ----------
+
 class SimpleCNN(nn.Module):
     def __init__(self):
         super(SimpleCNN, self).__init__()
@@ -41,27 +42,32 @@ def load_model():
 
 model = load_model()
 
-# ---------- Design ----------
+# ---------- STYLE ----------
+
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Syne&display=swap');
+
         html, body, [class*="css"] {
             font-family: 'Syne', sans-serif !important;
             background-color: #ffffff;
             color: #000000;
         }
+
         .description-text {
             text-align: center;
             font-size: 1.1rem;
             margin-bottom: 2rem;
             font-family: 'Syne', sans-serif !important;
         }
+
         .external-button-small {
             display: flex;
             justify-content: center;
             margin-bottom: 2rem;
             font-family: 'Syne', sans-serif !important;
         }
+
         .external-button-small a {
             background-color: black;
             color: white;
@@ -71,25 +77,30 @@ st.markdown("""
             text-decoration: none;
             font-family: 'Syne', sans-serif !important;
         }
-        .original-price {
-            text-decoration: line-through;
-            color: #888888;
-            font-family: 'Syne', sans-serif !important;
-        }
+
         .discounted-price {
             color: green;
             font-weight: bold;
             font-family: 'Syne', sans-serif !important;
         }
+
+        .original-price {
+            color: gray;
+            text-decoration: line-through;
+            font-family: 'Syne', sans-serif !important;
+        }
     </style>
 """, unsafe_allow_html=True)
 
-# Logo zentriert
+# ---------- ZENTRIERTES LOGO ----------
+
 cols = st.columns([1, 1, 1])
 with cols[1]:
     st.image("logo.png", width=180)
 
-st.markdown('<div class="description-text">Upload a photo of your old piece of jewelry. Our AI estimates the weight and suggests matching new designs!</div>', unsafe_allow_html=True)
+# ---------- BESCHREIBUNG ----------
+
+st.markdown('<div class="description-text">Upload a photo of your old piece of jewelry next to a ruler. Our AI estimates the weight and suggests matching new designs!</div>', unsafe_allow_html=True)
 
 st.markdown("""
 <div class="external-button-small">
@@ -97,15 +108,18 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Eingabe
+# ---------- INPUT ----------
+
 material = st.selectbox("Select material", ["Silver", "Gold", "Other"])
 if material == "Other":
     custom_material = st.text_input("Please specify the material")
-    material = custom_material
+    if custom_material:
+        material = custom_material
 
 uploaded_file = st.file_uploader("Upload an image of your old jewelry", type=["jpg", "jpeg", "png"])
 
-# Gewicht vorhersagen
+# ---------- GEWICHTSVORHERSAGE ----------
+
 def predict_weight(image):
     transform = transforms.Compose([
         transforms.Resize((224, 224)),
@@ -124,38 +138,30 @@ if uploaded_file:
         weight = predict_weight(image)
         st.write(f"**Estimated weight:** {weight:.2f} grams")
 
+    # ---------- MATCHING DESIGNS ----------
+
     df = pd.read_csv("designs.csv", sep=";")
     tolerance = 1.0
     matched = df[
         (abs(df["weight"] - weight) <= tolerance) &
         (df["material"].str.lower() == material.lower())
     ]
-    
-    
-if not matched.empty:
-    st.markdown("<h4 style='margin-left: 16px;'>Matching Designs:</h4>", unsafe_allow_html=True)
-    cols = st.columns(3)  # 3 Designs pro Zeile
 
-    for idx, row in matched.iterrows():
-        with cols[idx % 3]:
-            st.image(row["filename"], use_container_width=True)
-            st.markdown(
-                f"""
-                <div style='text-align: center; margin-top: -8px;'>
-                    <a href="{row['url']}" target="_blank" style="text-decoration: none; font-weight: bold;">
-                        {row['name']}
-                    </a><br>
-                    <span style="text-decoration: line-through; color: gray;">
-                        Original Price: {row['price']} €
-                    </span><br>
-                    <span style="color: green;">
-                        Now: {round(row['price'] * 0.9, 2)} € (10% off)
-                    </span>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-else:
-    st.write("No matching designs found.")
-
-
+    if not matched.empty:
+        st.markdown("<h4 style='margin-auto: 16px;'>Matching Designs:</h4>", unsafe_allow_html=True)
+        cols = st.columns(3)
+        for idx, row in matched.iterrows():
+            with cols[idx % 3]:
+                st.image(row["filename"], use_container_width=True)
+                st.markdown(
+                    f"""
+                    <div style='text-align: center; margin-top: -8px; font-family: 'Syne', sans-serif !important;'>
+                        <a href='{row['url']}' target='_blank' style='text-decoration: none; font-weight: bold; font-family: 'Syne', sans-serif !important;'>{row['name']}</a><br>
+                        <span class='original-price'>Original Price: {row['price']} €</span><br>
+                        <span class='discounted-price'>Now: {round(row['price'] * 0.9, 2)} € (10% off)</span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+    else:
+        st.write("No matching designs found.")
