@@ -113,33 +113,12 @@ def predict_weight(image):
         prediction = model(image).item()
     return round(prediction, 2)
     
-def detect_ruler(image):
-    img = np.array(image.convert("RGB"))
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    edges = cv2.Canny(gray, 50, 150)
-
-    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-    for cnt in contours:
-        x, y, w, h = cv2.boundingRect(cnt)
-        aspect_ratio = float(w) / h if h != 0 else 0
-        area = cv2.contourArea(cnt)
-
-        if 5 < aspect_ratio < 20 and area > 5000:
-            return True
-    return False
-
 if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
     st.image(image, caption="Uploaded image", use_container_width=True)
-
-    # --- Temporär deaktivierter Lineal-Check ---
-#if not detect_ruler(image):
-#     st.error("❌ Please include a ruler in your photo to enable accurate weight estimation.")
-# else: 
-
-        weight = predict_weight(image)
-        st.write(f"**Estimated weight:** {weight:.2f} grams")
+ 
+    weight = predict_weight(image)
+    st.write(f"**Estimated weight:** {weight:.2f} grams")
 
         df = pd.read_csv("designs.csv", sep=";")
         tolerance = 1.0
