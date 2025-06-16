@@ -42,7 +42,14 @@ with cols[1]:
     st.image("logo.png", width=180)
 
 # ---------- BESCHREIBUNG ----------
-st.markdown('<div style="text-align: center; font-size: 1.1rem; margin-bottom: 2rem; font-family: 'Syne', sans-serif !important; ">Upload a photo of your old piece of jewelry next to ruler. Our AI estimates the weight and suggests matching new designs!</div>', unsafe_allow_html=True)
+st.markdown(
+    """
+    <div style='text-align: center; font-size: 1.1rem; margin-bottom: 2rem; font-family: "Syne", sans-serif !important;'>
+        Upload a photo of your old piece of jewelry next to a ruler. Our AI estimates the weight and suggests matching new designs!
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 st.markdown("""
 <div style="display: flex; justify-content: center; margin-bottom: 2rem;">
