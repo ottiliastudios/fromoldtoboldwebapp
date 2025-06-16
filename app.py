@@ -133,9 +133,11 @@ if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
     st.image(image, caption="Uploaded image", use_container_width=True)
 
-    if not detect_ruler(image):
-        st.error("🚫 No ruler detected in the image. Please include a ruler next to your jewelry for accurate weight estimation.")
-    else:
+    # --- Temporär deaktivierter Lineal-Check ---
+#if not detect_ruler(image):
+#     st.error("❌ Please include a ruler in your photo to enable accurate weight estimation.")
+# else: 
+
         weight = predict_weight(image)
         st.write(f"**Estimated weight:** {weight:.2f} grams")
 
