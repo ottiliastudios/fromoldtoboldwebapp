@@ -116,7 +116,10 @@ def predict_weight(image):
 # ---------- PREDICTION + RECOMMENDATION ----------
 if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
-    st.image(image, caption="Uploaded image", width=200)
+    
+    cols = st.columns([1, 1, 1])
+    with cols[1]:
+        st.image(image, caption="Uploaded image", width=200)
 
     weight = predict_weight(image)
     st.write(f"**Estimated weight:** {weight:.2f} grams")
