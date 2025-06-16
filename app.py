@@ -148,7 +148,7 @@ if uploaded_file:
     ]
 
     if not matched.empty:
-        st.markdown("<h4 style='margin-auto: 16px;'>Matching Designs:</h4>", unsafe_allow_html=True)
+        st.markdown("<h4 style='margin-left: 16px;'>Matching Designs:</h4>", unsafe_allow_html=True)
         cols = st.columns(3)
         for idx, row in matched.iterrows():
             with cols[idx % 3]:
