@@ -124,7 +124,7 @@ if uploaded_file:
         (df["material"].str.lower() == material.lower())
     ]
 
-        st.subheader("Matching designs:")
+    st.subheader("Matching designs:")
     if not matched.empty:
         for _, row in matched.iterrows():
             st.image(row["filename"], use_container_width=True)
