@@ -153,7 +153,7 @@ if uploaded_file:
                         f"""
                         <div style='text-align: center; margin-top: -8px; font-family: "Syne", sans-serif !important;'>
                             <a href='{row['url']}' target='_blank' style='text-decoration: none; font-weight: bold;'>{row['name']}</a><br>
-                            <span style='font-size: 0.9rem;'>Weight: {row['weight']} g</span><br>
+                            <span style='font-size: 0.9rem; font-family: "Syne", sans-serif !important;'>Weight: {row['weight']} g</span><br>
                             <span class='original-price'>Original Price: {row['price']} €</span><br>
                             <span class='discounted-price'>Now: {round(row['price'] * 0.9, 2)} € (10% off)</span>
                         </div>
