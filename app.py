@@ -125,24 +125,33 @@ if uploaded_file:
     ]
 
     st.subheader("Matching designs:")
+
     if not matched.empty:
         for _, row in matched.iterrows():
-            st.image(row["filename"], use_container_width=True)
+            # Originalpreis
+            original_price = row["price"]
+            discount = 0.10
+            discounted_price = original_price * (1 - discount)
 
-            # Preis & Rabattberechnung
-            original_price = float(row["price"])
-            discount = 0.10  # 10 %
-            discounted_price = round(original_price * (1 - discount), 2)
+            # Bild anzeigen
+            st.image(row["filename"], width=250)
 
+            # Name mit Link anzeigen
+            st.markdown(
+                f"**[{row['name']}]({row['url']})**",
+                unsafe_allow_html=True
+            )
+
+            # Preise anzeigen
             st.markdown(f"""
-            <div style="text-align: center; margin-top: -10px; font-family: 'Syne', sans-serif !important;">
-                <a href="{row['url']}" target="_blank" style="font-size: 1.1rem; font-weight: bold;">{row['name']}</a><br>
-                <span style="color: gray; text-decoration: line-through;">{original_price:.2f} €</span>
-                <span style="color: green; font-weight: bold; margin-left: 10px;">{discounted_price:.2f} €</span><br>
-                <small style="color: darkgreen;">You save {int(discount*100)}%</small>
-            </div>
+                <div style="font-size: 0.95rem;">
+                    Original price: <s>{original_price:.2f} €</s><br>
+                    <span style="color: green;">With From Old to Bold: {discounted_price:.2f} € (-10%)</span>
+                </div>
             """, unsafe_allow_html=True)
+            st.markdown("---")
     else:
         st.write("No matching designs found.")
+
 
         
