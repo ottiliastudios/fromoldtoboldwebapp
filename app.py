@@ -94,7 +94,7 @@ with cols[1]:
     st.image("logo.png", width=180)
 
 # ---------- Intro Text + Link ----------
-st.markdown('<div class="description-text">Upload a photo of your old piece of jewelry. Our AI estimates the weight and suggests matching new designs!</div>', unsafe_allow_html=True)
+st.markdown('<div class="description-text">Upload a photo of your old piece of jewelry next to a ruler. Our AI estimates the weight and suggests matching new designs!</div>', unsafe_allow_html=True)
 
 st.markdown("""
 <div class="external-button-small">
