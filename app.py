@@ -118,10 +118,11 @@ if uploaded_file:
     image = Image.open(uploaded_file).convert("RGB")
     weight = predict_weight(image)
     
-    cols = st.columns([1, 1, 1])  # Zentrierung über Spalten
-    with cols[1]:
+cols = st.columns([1, 1, 1])  # Zentrierung über Spalten
+with cols[1]:
     st.image(image, caption="Uploaded image", width=200)
     st.markdown(f"<div style='text-align: center; font-weight: bold;'>Estimated weight: {weight:.2f} grams</div>", unsafe_allow_html=True)
+
 
 
     df = pd.read_csv("designs.csv", sep=";")
