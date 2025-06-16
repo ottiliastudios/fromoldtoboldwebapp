@@ -139,26 +139,33 @@ if uploaded_file:
         (df["material"].str.lower() == material.lower())
     ]
 
-    if not matched.empty:
-        st.markdown("<h4 style='margin-left: 16px;'>Matching Designs:</h4>", unsafe_allow_html=True)
+# Rabatt abhängig vom Material
+if material.lower() == "silver":
+    discount_rate = 0.10
+elif material.lower() == "gold":
+    discount_rate = 0.20
+else:
+    discount_rate = 0.0  # Kein Rabatt für "Other" oder unbekannte Materialien
 
-        rows = [matched.iloc[i:i+3] for i in range(0, len(matched), 3)]
+# Matching Designs anzeigen
+if not matched.empty:
+    st.markdown("<h4 style='margin-left: 16px;'>Matching Designs:</h4>", unsafe_allow_html=True)
+    cols = st.columns(3)
+    for idx, row in matched.iterrows():
+        discounted_price = round(row["price"] * (1 - discount_rate), 2)
+        with cols[idx % 3]:
+            st.image(row["filename"], use_container_width=True)
+            st.markdown(
+                f"""
+                <div style='text-align: center; margin-top: -8px; font-family: "Syne", sans-serif !important;'>
+                    <a href='{row['url']}' target='_blank' style='text-decoration: none; font-weight: bold; font-family: "Syne", sans-serif !important;'>{row['name']}</a><br>
+                    <span style='font-size: 0.9rem; font-family: "Syne", sans-serif !important;'>Weight: {row['weight']} g</span><br>
+                    <span style='text-decoration: line-through; color: gray;'>Original Price: {row['price']} €</span><br>
+                    <span style='color: green; font-weight: bold;'>Now: {discounted_price} € ({int(discount_rate * 100)}% off)</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+else:
+    st.write("No matching designs found.")
 
-        for row_group in rows:
-            cols = st.columns(3)
-            for idx, (_, row) in enumerate(row_group.iterrows()):
-                with cols[idx]:
-                    st.image(row["filename"], use_container_width=True)
-                    st.markdown(
-                        f"""
-                        <div style='text-align: center; margin-top: -8px; font-family: "Syne", sans-serif !important;'>
-                            <a href='{row['url']}' target='_blank' style='text-decoration: none; font-weight: bold;'>{row['name']}</a><br>
-                            <span style='font-size: 0.9rem; font-family: "Syne", sans-serif !important;'>Weight: {row['weight']} g</span><br>
-                            <span class='original-price'>Original Price: {row['price']} €</span><br>
-                            <span class='discounted-price'>Now: {round(row['price'] * 0.9, 2)} € (10% off)</span>
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
-    else:
-        st.write("No matching designs found.")
