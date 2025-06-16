@@ -147,21 +147,26 @@ if uploaded_file:
         (df["material"].str.lower() == material.lower())
     ]
 
-    if not matched.empty:
-        st.markdown("<h4 style='margin-left: 16px;'>Matching Designs:</h4>", unsafe_allow_html=True)
+if not matched.empty:
+    st.markdown("<h4 style='margin-left: 16px;'>Matching Designs:</h4>", unsafe_allow_html=True)
+
+    rows = [matched.iloc[i:i+3] for i in range(0, len(matched), 3)]  # 3 Designs pro Zeile
+
+    for row_group in rows:
         cols = st.columns(3)
-        for idx, row in matched.iterrows():
-            with cols[idx % 3]:
+        for idx, (_, row) in enumerate(row_group.iterrows()):
+            with cols[idx]:
                 st.image(row["filename"], use_container_width=True)
                 st.markdown(
                     f"""
-                    <div style='text-align: center; margin-top: -8px; font-family: 'Syne', sans-serif !important;'>
-                        <a href='{row['url']}' target='_blank' style='text-decoration: none; font-weight: bold; font-family: 'Syne', sans-serif !important;'>{row['name']}</a><br>
+                    <div style='text-align: center; margin-top: -8px; font-family: "Syne", sans-serif !important;'>
+                        <a href='{row['url']}' target='_blank' style='text-decoration: none; font-weight: bold;'>{row['name']}</a><br>
                         <span class='original-price'>Original Price: {row['price']} €</span><br>
                         <span class='discounted-price'>Now: {round(row['price'] * 0.9, 2)} € (10% off)</span>
                     </div>
                     """,
                     unsafe_allow_html=True
                 )
-    else:
-        st.write("No matching designs found.")
+else:
+    st.write("No matching designs found.")
+
