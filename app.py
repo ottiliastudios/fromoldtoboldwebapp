@@ -94,7 +94,7 @@ with cols[1]:
     st.image("logo.png", width=180)
 
 # ---------- Intro Text + Link ----------
-st.markdown('<div class="description-text">Upload a photo of your old piece of jewelry. Our AI estimates the weight and suggests matching new designs!</div>', unsafe_allow_html=True)
+st.markdown('<div class="description-text">Upload a photo of your old piece of jewelry next to a ruler. Our AI estimates the weight and suggests matching new designs!</div>', unsafe_allow_html=True)
 
 st.markdown("""
 <div class="external-button-small">
@@ -153,6 +153,7 @@ if uploaded_file:
                         f"""
                         <div style='text-align: center; margin-top: -8px; font-family: "Syne", sans-serif !important;'>
                             <a href='{row['url']}' target='_blank' style='text-decoration: none; font-weight: bold;'>{row['name']}</a><br>
+                            <span style='font-size: 0.9rem;'>Weight: {row['weight']} g</span><br>
                             <span class='original-price'>Original Price: {row['price']} €</span><br>
                             <span class='discounted-price'>Now: {round(row['price'] * 0.9, 2)} € (10% off)</span>
                         </div>
